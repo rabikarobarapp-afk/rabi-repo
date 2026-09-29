@@ -26,4 +26,6 @@ cd karobar-video
 bash make_promo.sh        # -> karobar_promo.mp4 (15 s, 1920x1080, 30 fps)
 ```
 
-Needs ffmpeg 6+. Edit texts, colours, fonts and scene lengths at the top of `make_promo.sh`.
+Needs ffmpeg 6+. Edit texts, colours, fonts, scene lengths, music volume and
+sound effects (`SFX`, `SFX_VOLUME`) at the top of `make_promo.sh`.
+`make_music.sh` regenerates the royalty-free `music.mp3`.

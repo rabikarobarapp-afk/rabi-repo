@@ -39,6 +39,11 @@ S3_T1="Label";          S3_T2="Printers";  S3_SUB="Barcode & Shipping Labels";  
 S4_T1="Barcode";        S4_T2="Scanners";  S4_SUB="2D Wired & Wireless";           S4_BADGE="UP TO 18% OFF"
 S5_T1="Thermal Paper";  S5_T2="& Labels";  S5_SUB="58mm • 80mm • Label Rolls";     S5_BADGE="UP TO 17% OFF"
 
+# Audio: background music (music.mp3, optional) and motion sound effects
+MUSIC_VOLUME=0.55       # 0.0 - 1.0
+SFX=1                   # 1 = whooshes / pops / chimes on the animations, 0 = off
+SFX_VOLUME=0.9          # 0.0 - 1.5
+
 # Scene lengths (seconds, each must be a multiple of 1/FPS) and transition length.
 # Total = D1+D2+D3+D4+D5+D6 - 5*XF  ->  2.8*5 + 3.0 - 5*0.4 = 17.0 - 2.0 = 15.0 s
 D1=2.8; D2=2.8; D3=2.8; D4=2.8; D5=2.8; D6=3.0
@@ -328,14 +333,68 @@ TOTAL=$(calc "$O5+$D6")
 FADE_ST=$(calc "$TOTAL-0.4")
 echo "    offsets: $O1 $O2 $O3 $O4 $O5   total: ${TOTAL}s"
 
-# Audio: music.mp3 (trimmed, faded, volume 0.8) or silence
+# --- Sound effects (generated with ffmpeg, no audio files needed) ----------
+SFX_IN=(); SFX_CHAIN=""; SFX_LABELS=""; n_sfx=0
+if [ "$SFX" = "1" ]; then
+  echo "    generating sound effects..."
+  # whoosh: pink noise, band-limited, swells up then falls away (scene transitions)
+  "${FF[@]}" -f lavfi -i "anoisesrc=c=pink:r=48000:a=0.9:d=0.6" -af \
+    "highpass=f=250,lowpass=f=3200,volume='if(lt(t,0.32),pow(t/0.32,2),exp(-(t-0.32)*11))':eval=frame,aformat=channel_layouts=stereo" \
+    "$TMP/whoosh.wav"
+  # swish: short airy white noise (cards and text sliding in)
+  "${FF[@]}" -f lavfi -i "anoisesrc=c=white:r=48000:a=0.5:d=0.35" -af \
+    "highpass=f=1800,lowpass=f=7500,volume='if(lt(t,0.09),t/0.09,exp(-(t-0.09)*16))':eval=frame,aformat=channel_layouts=stereo" \
+    "$TMP/swish.wav"
+  # pop: rising "bubble" tone (badges popping in)
+  "${FF[@]}" -f lavfi -i "aevalsrc=exprs='0.9*sin(2*PI*(380*t+2600*t*t))*exp(-t*28)*min(t/0.002\,1)':s=48000:d=0.2" \
+    -af "aformat=channel_layouts=stereo" "$TMP/pop.wav"
+  # chime: bell-like E6 + B6 with a short echo (logo and call to action)
+  "${FF[@]}" -f lavfi -i "aevalsrc=exprs='0.30*(sin(2*PI*1318.5*t)+0.6*sin(2*PI*1975.5*t)+0.25*sin(2*PI*2637*t))*exp(-t*4)*min(t/0.004\,1)':s=48000:d=1.3" \
+    -af "aecho=0.8:0.6:110:0.28,aformat=channel_layouts=stereo" "$TMP/chime.wav"
+
+  # Each scene starts (its t=0) at the start of the transition into it:
+  #   scene1 = 0, scene2 = O1, scene3 = O2, scene4 = O3, scene5 = O4, scene6 = O5
+  # event: file  time(s)  volume
+  EVENTS="
+    chime  0.10            1.8
+    swish  0.70            1.6
+    whoosh $(calc "$O1-0.05") 2.4
+    swish  $(calc "$O1+0.40") 1.6
+    pop    $(calc "$O1+0.95") 0.9
+    whoosh $(calc "$O2-0.05") 2.4
+    pop    $(calc "$O2+0.95") 0.9
+    whoosh $(calc "$O3-0.05") 2.4
+    swish  $(calc "$O3+0.40") 1.6
+    pop    $(calc "$O3+0.95") 0.9
+    whoosh $(calc "$O4-0.05") 2.4
+    swish  $(calc "$O4+0.40") 1.6
+    pop    $(calc "$O4+0.95") 0.9
+    whoosh $(calc "$O5-0.05") 2.4
+    chime  $(calc "$O5+0.40") 1.8
+    pop    $(calc "$O5+0.95") 0.9
+  "
+  idx=7   # inputs 0-5 = scenes, 6 = music/silence
+  while read -r f tm vol; do
+    [ -n "${f:-}" ] || continue
+    ms=$(awk "BEGIN{printf \"%d\", $tm*1000}")
+    SFX_IN+=(-i "$TMP/$f.wav")
+    SFX_CHAIN+="[${idx}:a]adelay=${ms}|${ms},volume=$(calc "$vol*$SFX_VOLUME")[e${n_sfx}];"
+    SFX_LABELS+="[e${n_sfx}]"
+    idx=$((idx+1)); n_sfx=$((n_sfx+1))
+  done <<< "$EVENTS"
+fi
+
+# --- Background: music.mp3 (trimmed, faded) or silence ---------------------
 if [ -f music.mp3 ]; then
   AUDIO_IN=(-i music.mp3)
-  AFILTER="[6:a]apad,atrim=0:${TOTAL},afade=t=in:st=0:d=0.5,afade=t=out:st=$(calc "$TOTAL-1.5"):d=1.5,volume=0.8[aout]"
+  MUSIC="[6:a]aresample=48000,aformat=channel_layouts=stereo,apad,atrim=0:${TOTAL},afade=t=in:st=0:d=0.5,afade=t=out:st=$(calc "$TOTAL-1.5"):d=1.5,volume=${MUSIC_VOLUME}[bgm];"
 else
   AUDIO_IN=(-f lavfi -t "$TOTAL" -i anullsrc=r=48000:cl=stereo)
-  AFILTER="[6:a]atrim=0:${TOTAL}[aout]"
+  MUSIC="[6:a]atrim=0:${TOTAL}[bgm];"
 fi
+AUDIO_IN+=("${SFX_IN[@]+"${SFX_IN[@]}"}")
+# Mix music + effects (normalize=0 keeps every level as set), limiter prevents clipping
+AFILTER="${MUSIC}${SFX_CHAIN}[bgm]${SFX_LABELS}amix=inputs=$((n_sfx+1)):duration=first:normalize=0,alimiter=limit=0.95,atrim=0:${TOTAL}[aout]"
 
 echo "[4/4] Encoding final video..."
 "${FF[@]}" \
