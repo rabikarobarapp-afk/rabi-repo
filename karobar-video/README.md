@@ -17,4 +17,13 @@ logo 4x.
 | paper3.png | 80 mm Thermal Receipt Paper (extra) |
 | labelroll.png | Barcode Label Sticker 100 mm roll (extra) |
 
-Add `music.mp3` here (optional) and run the ffmpeg script in this folder.
+Add `music.mp3` here (optional) to get background music.
+
+## Making the video
+
+```sh
+cd karobar-video
+bash make_promo.sh        # -> karobar_promo.mp4 (15 s, 1920x1080, 30 fps)
+```
+
+Needs ffmpeg 6+. Edit texts, colours, fonts and scene lengths at the top of `make_promo.sh`.
