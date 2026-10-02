@@ -1,0 +1,353 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Mero Coding Class – Courses</title>
+<style>
+  :root {
+    --bg: #0B1020;
+    --cyan: #22D3EE;
+    --purple: #8B5CF6;
+    --text: #E6EAF5;
+    --muted: #8A93B2;
+    --card: rgba(18, 25, 48, 0.78);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+  body { font-family: "DejaVu Sans", sans-serif; color: var(--text); position: relative; }
+  .mono { font-family: "DejaVu Sans Mono", monospace; }
+  .layer { position: absolute; inset: 0; }
+
+  #grid {
+    background-image:
+      linear-gradient(rgba(34,211,238,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,211,238,0.06) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+  .glow { position: absolute; width: 900px; height: 900px; border-radius: 50%; filter: blur(60px); }
+  #glowA { background: radial-gradient(circle, rgba(34,211,238,0.22), transparent 65%); }
+  #glowB { background: radial-gradient(circle, rgba(139,92,246,0.26), transparent 65%); }
+  .particle { position: absolute; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+  #vignette { background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%); }
+
+  /* Intro terminal */
+  #terminal {
+    position: absolute; left: 50%; top: 50%; width: 1000px; height: 420px;
+    margin-left: -500px; margin-top: -210px;
+    background: rgba(10, 15, 32, 0.92); border: 1px solid rgba(34,211,238,0.35);
+    border-radius: 18px; box-shadow: 0 0 60px rgba(34,211,238,0.18), 0 30px 80px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+  #terminal .bar { height: 48px; background: rgba(255,255,255,0.04); display: flex; align-items: center; padding: 0 20px; gap: 10px; }
+  #terminal .dot { width: 14px; height: 14px; border-radius: 50%; }
+  #terminal .bar span.title { margin-left: 16px; color: var(--muted); font-size: 18px; }
+  #termBody { padding: 36px 44px; font-size: 34px; line-height: 1.7; white-space: pre; }
+  .prompt { color: var(--cyan); }
+  .fn { color: var(--purple); }
+  .str { color: #A7F3D0; }
+  .cursor { display: inline-block; width: 18px; height: 38px; background: var(--cyan); vertical-align: -6px; margin-left: 4px; }
+
+  /* Brand tag (top-left) */
+  #brand { position: absolute; left: 80px; top: 64px; display: flex; align-items: center; gap: 16px; font-size: 26px; letter-spacing: 6px; font-weight: bold; }
+  #brand .logo { width: 52px; height: 52px; border-radius: 12px; border: 2px solid var(--cyan); display: flex; align-items: center; justify-content: center; color: var(--cyan); font-size: 22px; letter-spacing: 0; box-shadow: 0 0 18px rgba(34,211,238,0.45); }
+  #brand .accent { color: var(--cyan); }
+
+  /* Course scene */
+  #courseScene { position: absolute; inset: 0; }
+  #heading { position: absolute; left: 80px; top: 170px; font-size: 22px; letter-spacing: 8px; color: var(--muted); }
+  #counter { position: absolute; right: 80px; top: 70px; font-size: 26px; color: var(--muted); }
+  #counter b { color: var(--cyan); font-size: 44px; }
+  #card {
+    position: absolute; left: 80px; top: 250px; width: 860px; height: 640px;
+    background: var(--card); border-radius: 28px; padding: 60px;
+    border: 1px solid rgba(139,92,246,0.4);
+    box-shadow: 0 0 80px rgba(139,92,246,0.18), 0 40px 90px rgba(0,0,0,0.45);
+  }
+  #icon {
+    width: 150px; height: 150px; border-radius: 32px; display: flex; align-items: center; justify-content: center;
+    font-size: 58px; font-weight: bold; color: var(--bg);
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    box-shadow: 0 0 40px rgba(34,211,238,0.45);
+  }
+  #title { margin-top: 48px; font-size: 76px; font-weight: bold; line-height: 1.05; }
+  #desc { margin-top: 24px; font-size: 30px; color: var(--muted); line-height: 1.45; }
+  #tags { margin-top: 40px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .tag { padding: 10px 22px; border-radius: 999px; font-size: 22px; border: 1px solid rgba(34,211,238,0.5); color: var(--cyan); background: rgba(34,211,238,0.08); }
+  #code {
+    position: absolute; left: 1020px; top: 300px; width: 820px; height: 540px;
+    background: rgba(8, 12, 26, 0.9); border-radius: 22px; border: 1px solid rgba(34,211,238,0.25);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+  #code .bar { height: 46px; background: rgba(255,255,255,0.04); display: flex; align-items: center; padding: 0 20px; gap: 10px; }
+  #code .dot { width: 13px; height: 13px; border-radius: 50%; }
+  #code .file { margin-left: 16px; color: var(--muted); font-size: 18px; }
+  #codeBody { padding: 34px 40px; font-size: 27px; line-height: 1.75; white-space: pre; }
+  .ln { color: #3B4566; display: inline-block; width: 44px; }
+  #progress { position: absolute; left: 80px; right: 80px; bottom: 70px; height: 4px; background: rgba(255,255,255,0.08); border-radius: 4px; }
+  #progressFill { height: 100%; width: 0; border-radius: 4px; background: linear-gradient(90deg, var(--cyan), var(--purple)); box-shadow: 0 0 12px var(--cyan); }
+
+  /* Outro grid */
+  #outro { position: absolute; inset: 0; }
+  #outroTitle { position: absolute; top: 150px; width: 100%; text-align: center; font-size: 64px; font-weight: bold; }
+  #outroTitle .accent { background: linear-gradient(90deg, var(--cyan), var(--purple)); -webkit-background-clip: text; color: transparent; }
+  #outroGrid { position: absolute; left: 50%; top: 300px; width: 1500px; margin-left: -750px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  .mini { height: 190px; background: var(--card); border-radius: 22px; border: 1px solid rgba(139,92,246,0.35); display: flex; align-items: center; gap: 28px; padding: 0 36px; }
+  .mini .ic { width: 96px; height: 96px; flex: none; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; color: var(--bg); background: linear-gradient(135deg, var(--cyan), var(--purple)); }
+  .mini .nm { font-size: 34px; font-weight: bold; line-height: 1.15; }
+  #url { position: absolute; bottom: 140px; width: 100%; text-align: center; font-size: 46px; color: var(--cyan); text-shadow: 0 0 24px rgba(34,211,238,0.7); letter-spacing: 2px; }
+  #fade { background: var(--bg); opacity: 0; }
+</style>
+</head>
+<body>
+  <div class="layer" id="grid"></div>
+  <div class="glow" id="glowA"></div>
+  <div class="glow" id="glowB"></div>
+  <div class="layer" id="particles"></div>
+
+  <div id="terminal">
+    <div class="bar">
+      <div class="dot" style="background:#FF5F57"></div>
+      <div class="dot" style="background:#FEBC2E"></div>
+      <div class="dot" style="background:#28C840"></div>
+      <span class="title mono">~/mero-coding-class</span>
+    </div>
+    <div id="termBody" class="mono"></div>
+  </div>
+
+  <div id="courseScene">
+    <div id="heading" class="mono">// OUR COURSES</div>
+    <div id="counter" class="mono"><b id="cnum">01</b> / <span id="ctot">06</span></div>
+    <div id="card">
+      <div id="icon" class="mono"></div>
+      <div id="title"></div>
+      <div id="desc"></div>
+      <div id="tags"></div>
+    </div>
+    <div id="code">
+      <div class="bar">
+        <div class="dot" style="background:#FF5F57"></div>
+        <div class="dot" style="background:#FEBC2E"></div>
+        <div class="dot" style="background:#28C840"></div>
+        <span class="file mono" id="fileName"></span>
+      </div>
+      <div id="codeBody" class="mono"></div>
+    </div>
+    <div id="progress"><div id="progressFill"></div></div>
+  </div>
+
+  <div id="outro">
+    <div id="outroTitle">Start coding with <span class="accent">Mero Coding Class</span></div>
+    <div id="outroGrid"></div>
+    <div id="url" class="mono">merocodingclass.com</div>
+  </div>
+
+  <div id="brand"><div class="logo mono">&lt;/&gt;</div><div>MERO <span class="accent">CODING</span> CLASS</div></div>
+  <div class="layer" id="vignette"></div>
+  <div class="layer" id="fade"></div>
+
+<script>
+// ---- Edit the course list here ----
+const COURSES = [
+  { icon: "</>", title: "Web Development", desc: "Build responsive websites from scratch with modern HTML, CSS and JavaScript.",
+    tags: ["HTML5", "CSS3", "JavaScript", "Responsive"], file: "index.html",
+    code: [["<", "tag"], ["section class=", ""], ["\"hero\"", "str"], [">", "tag"], ["\n  <h1>", "tag"], ["Hello, World!", ""], ["</h1>", "tag"], ["\n  <button ", "tag"], ["onclick=", ""], ["\"start()\"", "str"], [">", "tag"], ["Start", ""], ["</button>", "tag"], ["\n</section>", "tag"]] },
+  { icon: "Py", title: "Python Programming", desc: "Master programming fundamentals, logic and automation with Python.",
+    tags: ["Basics", "OOP", "Automation", "Projects"], file: "main.py",
+    code: [["def ", "kw"], ["greet", "fn"], ["(name):", ""], ["\n    return ", "kw"], ["f\"Namaste, {name}!\"", "str"], ["\n\nfor ", "kw"], ["s ", ""], ["in ", "kw"], ["students:", ""], ["\n    print", "fn"], ["(greet(s))", ""]] },
+  { icon: "JS", title: "JavaScript & React", desc: "Create fast, interactive user interfaces with components and hooks.",
+    tags: ["ES6+", "React", "Hooks", "APIs"], file: "App.jsx",
+    code: [["function ", "kw"], ["App", "fn"], ["() {", ""], ["\n  const ", "kw"], ["[n, setN] = ", ""], ["useState", "fn"], ["(0);", ""], ["\n  return ", "kw"], ["<button onClick=", "tag"], ["{() => setN(n+1)}", ""], [">", "tag"], ["\n    Clicked {n}", ""], ["\n  </button>", "tag"], [";\n}", ""]] },
+  { icon: "{ }", title: "MERN Stack", desc: "Go full-stack with MongoDB, Express, React and Node.js.",
+    tags: ["MongoDB", "Express", "React", "Node.js"], file: "server.js",
+    code: [["const ", "kw"], ["app = ", ""], ["express", "fn"], ["();", ""], ["\n\napp.", ""], ["get", "fn"], ["(", ""], ["\"/courses\"", "str"], [", ", ""], ["async ", "kw"], ["(req, res) => {", ""], ["\n  res.", ""], ["json", "fn"], ["(", ""], ["await ", "kw"], ["Course.", ""], ["find", "fn"], ["());", ""], ["\n});", ""]] },
+  { icon: "Dj", title: "Python Django", desc: "Build secure, scalable backends and web apps with Django.",
+    tags: ["Models", "Views", "REST API", "Auth"], file: "models.py",
+    code: [["class ", "kw"], ["Course", "fn"], ["(models.Model):", ""], ["\n    title = models.", ""], ["CharField", "fn"], ["(max_length=", ""], ["100", "str"], [")", ""], ["\n    seats = models.", ""], ["IntegerField", "fn"], ["()", ""], ["\n\n    def ", "kw"], ["__str__", "fn"], ["(self):", ""], ["\n        return ", "kw"], ["self.title", ""]] },
+  { icon: "UI", title: "UI/UX Design", desc: "Design beautiful, user-friendly interfaces and prototypes.",
+    tags: ["Figma", "Wireframes", "Prototyping", "Design Systems"], file: "theme.css",
+    code: [[":root ", "fn"], ["{", ""], ["\n  --primary: ", ""], ["#22D3EE", "str"], [";", ""], ["\n  --accent: ", ""], ["#8B5CF6", "str"], [";", ""], ["\n  --radius: ", ""], ["16px", "str"], [";", ""], ["\n}", ""], ["\n.card ", "fn"], ["{ ", ""], ["border-radius: ", ""], ["var(--radius)", "str"], ["; }", ""]] },
+];
+
+// ---- Timeline (seconds) ----
+const DURATION = 30;
+const INTRO_END = 3.0;
+const COURSE_START = 3.0, COURSE_LEN = 3.5;          // 6 x 3.5s = 21s -> ends at 24s
+const OUTRO_START = COURSE_START + COURSES.length * COURSE_LEN;
+
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const easeOut = x => 1 - Math.pow(1 - x, 3);
+const easeInOut = x => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const easeBack = x => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const COLORS = { kw: "#C084FC", fn: "#22D3EE", str: "#A7F3D0", tag: "#F472B6", "": "#E6EAF5" };
+
+// Deterministic particles
+let seed = 7;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const PARTS = Array.from({ length: 46 }, () => ({
+  x: rnd() * 1920, y: rnd() * 1080, r: 1.5 + rnd() * 3, sp: 8 + rnd() * 26, ph: rnd() * 6.28, c: rnd() < 0.5,
+}));
+const pEls = PARTS.map(p => {
+  const d = document.createElement("div");
+  d.className = "particle";
+  d.style.width = d.style.height = (p.r * 2) + "px";
+  if (!p.c) { d.style.background = "#8B5CF6"; d.style.boxShadow = "0 0 8px #8B5CF6"; }
+  $("particles").appendChild(d);
+  return d;
+});
+
+// Outro mini cards
+COURSES.forEach(c => {
+  const d = document.createElement("div");
+  d.className = "mini";
+  d.innerHTML = `<div class="ic mono">${esc(c.icon)}</div><div class="nm">${esc(c.title)}</div>`;
+  $("outroGrid").appendChild(d);
+});
+const minis = [...document.querySelectorAll(".mini")];
+$("ctot").textContent = String(COURSES.length).padStart(2, "0");
+
+// Render code tokens up to n visible characters
+function codeHTML(tokens, n, showCursor) {
+  let out = "", used = 0, line = 1;
+  out += `<span class="ln">${line}</span>`;
+  for (const [txt, kind] of tokens) {
+    if (used >= n) break;
+    const part = txt.slice(0, n - used);
+    used += part.length;
+    const pieces = part.split("\n");
+    pieces.forEach((pc, i) => {
+      if (i > 0) { line++; out += `\n<span class="ln">${line}</span>`; }
+      if (pc) out += `<span style="color:${COLORS[kind]}">${esc(pc)}</span>`;
+    });
+  }
+  if (showCursor) out += `<span class="cursor" style="height:30px;width:14px"></span>`;
+  return out;
+}
+const tokLen = tokens => tokens.reduce((a, [s]) => a + s.length, 0);
+
+let currentCourse = -1;
+
+window.render = function (t) {
+  // Background motion
+  $("grid").style.backgroundPosition = `0px ${t * 12}px`;
+  $("glowA").style.transform = `translate(${-150 + Math.sin(t * 0.35) * 160}px, ${-200 + Math.cos(t * 0.3) * 120}px)`;
+  $("glowB").style.transform = `translate(${1150 + Math.cos(t * 0.28) * 180}px, ${380 + Math.sin(t * 0.33) * 140}px)`;
+  PARTS.forEach((p, i) => {
+    const y = ((p.y - t * p.sp) % 1080 + 1080) % 1080;
+    const x = p.x + Math.sin(t * 0.6 + p.ph) * 18;
+    pEls[i].style.transform = `translate(${x}px, ${y}px)`;
+    pEls[i].style.opacity = 0.25 + 0.35 * (0.5 + 0.5 * Math.sin(t * 1.3 + p.ph));
+  });
+
+  // Global fade in/out
+  $("fade").style.opacity = 1 - easeOut(prog(t, 0, 0.8)) + easeInOut(prog(t, DURATION - 1.0, DURATION));
+
+  // Brand tag
+  const bIn = easeOut(prog(t, 2.4, 3.2));
+  $("brand").style.opacity = bIn;
+  $("brand").style.transform = `translateY(${(1 - bIn) * -20}px)`;
+
+  // ---- Intro terminal ----
+  const term = $("terminal");
+  if (t < INTRO_END + 0.1) {
+    term.style.display = "block";
+    const tin = easeBack(prog(t, 0.1, 0.8));
+    const tout = easeInOut(prog(t, 2.5, 3.05));
+    term.style.opacity = clamp(prog(t, 0.1, 0.5)) * (1 - tout);
+    term.style.transform = `scale(${(0.85 + 0.15 * tin) * (1 + tout * 0.15)})`;
+    term.style.filter = `blur(${tout * 10}px)`;
+    const l1 = "mero.courses()";
+    const n1 = Math.floor(prog(t, 0.7, 1.6) * l1.length);
+    const l2 = "Loading 6 courses...";
+    const n2 = Math.floor(prog(t, 1.75, 2.3) * l2.length);
+    const blink = Math.floor(t * 2.5) % 2 === 0;
+    let html = `<span class="prompt">&gt;</span> <span class="fn">${esc(l1.slice(0, n1))}</span>`;
+    if (n2 === 0 && blink) html += `<span class="cursor"></span>`;
+    if (t > 1.7) {
+      html += `\n<span class="str">${esc(l2.slice(0, n2))}</span>`;
+      if (n2 > 0) {
+        const bar = Math.floor(prog(t, 1.9, 2.45) * 20);
+        html += `\n<span class="prompt">[${"█".repeat(bar)}${"░".repeat(20 - bar)}]</span>`;
+      }
+    }
+    $("termBody").innerHTML = html;
+  } else {
+    term.style.display = "none";
+  }
+
+  // ---- Course showcase ----
+  const scene = $("courseScene");
+  const sceneOut = easeInOut(prog(t, OUTRO_START - 0.35, OUTRO_START + 0.25));
+  if (t >= COURSE_START - 0.1 && t < OUTRO_START + 0.3) {
+    scene.style.display = "block";
+    scene.style.opacity = clamp(prog(t, COURSE_START - 0.1, COURSE_START + 0.3)) * (1 - sceneOut);
+    const idx = Math.min(COURSES.length - 1, Math.floor((t - COURSE_START) / COURSE_LEN));
+    const lt = (t - COURSE_START) - idx * COURSE_LEN; // local time in course
+    const c = COURSES[Math.max(0, idx)];
+    if (idx !== currentCourse) {
+      currentCourse = idx;
+      $("icon").textContent = c.icon;
+      $("title").textContent = c.title;
+      $("desc").textContent = c.desc;
+      $("tags").innerHTML = c.tags.map(x => `<div class="tag mono">${esc(x)}</div>`).join("");
+      $("fileName").textContent = c.file;
+      $("cnum").textContent = String(idx + 1).padStart(2, "0");
+    }
+    const inP = easeOut(prog(lt, 0, 0.6));
+    const outP = idx < COURSES.length - 1 ? easeInOut(prog(lt, COURSE_LEN - 0.35, COURSE_LEN)) : 0;
+    const card = $("card");
+    card.style.opacity = inP * (1 - outP);
+    card.style.transform = `translateX(${(1 - inP) * -120 + outP * -80}px) rotate(${(1 - inP) * -2}deg)`;
+    const iconP = easeBack(prog(lt, 0.15, 0.7));
+    $("icon").style.transform = `scale(${iconP}) rotate(${(1 - iconP) * -30}deg)`;
+    $("title").style.opacity = easeOut(prog(lt, 0.25, 0.7));
+    $("title").style.transform = `translateY(${(1 - easeOut(prog(lt, 0.25, 0.7))) * 30}px)`;
+    $("desc").style.opacity = easeOut(prog(lt, 0.4, 0.85));
+    [...$("tags").children].forEach((el, i) => {
+      const p = easeBack(prog(lt, 0.6 + i * 0.1, 1.0 + i * 0.1));
+      el.style.opacity = clamp(p);
+      el.style.transform = `scale(${0.6 + 0.4 * p})`;
+    });
+    const code = $("code");
+    const cIn = easeOut(prog(lt, 0.2, 0.8));
+    code.style.opacity = cIn * (1 - outP);
+    code.style.transform = `translateY(${(1 - cIn) * 60 + outP * 40}px)`;
+    const total = tokLen(c.code);
+    const n = Math.floor(prog(lt, 0.6, COURSE_LEN - 0.6) * total);
+    $("codeBody").innerHTML = codeHTML(c.code, n, Math.floor(t * 2.5) % 2 === 0);
+    $("progressFill").style.width = (prog(t, COURSE_START, OUTRO_START) * 100) + "%";
+    const hP = easeOut(prog(t, COURSE_START, COURSE_START + 0.6));
+    $("heading").style.opacity = hP;
+  } else {
+    scene.style.display = "none";
+  }
+
+  // ---- Outro grid ----
+  const outro = $("outro");
+  if (t >= OUTRO_START - 0.1) {
+    outro.style.display = "block";
+    const tp = easeOut(prog(t, OUTRO_START, OUTRO_START + 0.7));
+    $("outroTitle").style.opacity = tp;
+    $("outroTitle").style.transform = `translateY(${(1 - tp) * 40}px)`;
+    minis.forEach((m, i) => {
+      const p = easeBack(prog(t, OUTRO_START + 0.3 + i * 0.12, OUTRO_START + 0.9 + i * 0.12));
+      m.style.opacity = clamp(prog(t, OUTRO_START + 0.3 + i * 0.12, OUTRO_START + 0.6 + i * 0.12));
+      m.style.transform = `scale(${0.7 + 0.3 * p}) translateY(${Math.sin(t * 1.2 + i) * 4}px)`;
+    });
+    const up = easeOut(prog(t, OUTRO_START + 1.4, OUTRO_START + 2.1));
+    $("url").style.opacity = up;
+    $("url").style.transform = `scale(${0.9 + 0.1 * up})`;
+    $("url").style.textShadow = `0 0 ${18 + 10 * Math.sin(t * 3)}px rgba(34,211,238,0.75)`;
+  } else {
+    outro.style.display = "none";
+  }
+};
+
+window.DURATION = DURATION;
+render(new URLSearchParams(location.search).get("t") * 1 || 0);
+</script>
+</body>
+</html>
