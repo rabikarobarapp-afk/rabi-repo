@@ -1,0 +1,456 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Mero Coding Class – Bright</title>
+<style>
+  @font-face { font-family: "Fredoka"; font-weight: 600; src: url(assets/fredoka-latin-600-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Fredoka"; font-weight: 700; src: url(assets/fredoka-latin-700-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Nunito"; font-weight: 700; src: url(assets/nunito-latin-700-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Nunito"; font-weight: 800; src: url(assets/nunito-latin-800-normal.woff2) format("woff2"); }
+  :root {
+    /* Brand colors sampled from the Mero Coding logo */
+    --orange: #DDA342;
+    --orange-dark: #C48A2C;
+    --orange-tint: #FBEBCF;
+    --blue: #304793;
+    --blue-dark: #233676;
+    --blue-mid: #5469B5;
+    --blue-tint: #DFE5F6;
+    --ink: #1F2A44;
+    --muted: #5B6584;
+    --bg: #FFF9EF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+  body { font-family: "Nunito", sans-serif; font-weight: 700; color: var(--ink); position: relative; }
+  .fred { font-family: "Fredoka", sans-serif; }
+  .mono { font-family: "DejaVu Sans Mono", monospace; }
+  .abs { position: absolute; }
+  .layer { position: absolute; inset: 0; }
+
+  #dots { background-image: radial-gradient(rgba(48,71,147,0.13) 2.5px, transparent 3px); background-size: 48px 48px; }
+  .shape { position: absolute; will-change: transform; }
+
+  /* Logo */
+  #logo { position: absolute; left: 0; top: 0; width: 480px; height: 394px; transform-origin: 0 0; }
+  #logo img { position: absolute; left: 0; top: 0; width: 480px; height: 394px; }
+  #tagline { position: absolute; top: 760px; width: 100%; text-align: center; }
+  #tagline .l1 { font-family: "Fredoka"; font-weight: 600; font-size: 60px; color: var(--blue); }
+  #tagline .l2 { margin-top: 12px; font-size: 32px; color: var(--muted); letter-spacing: 3px; }
+  .spark { position: absolute; left: 0; top: 0; }
+
+  /* Course scene */
+  #courses { position: absolute; inset: 0; }
+  #ourCourses { left: 290px; top: 98px; font-weight: 800; font-size: 26px; letter-spacing: 7px; color: var(--orange-dark); }
+  #counter { right: 100px; top: 80px; padding: 14px 30px; border-radius: 999px; background: #fff; box-shadow: 0 8px 24px rgba(48,71,147,0.12); font-size: 28px; color: var(--muted); }
+  #counter b { font-family: "Fredoka"; font-weight: 700; color: var(--blue); font-size: 34px; }
+  #titleBlock { left: 110px; top: 250px; width: 800px; height: 190px; }
+  #titleBlock svg { position: absolute; left: 0; top: 0; overflow: visible; }
+  #iconBubble { position: absolute; left: 40px; top: 30px; width: 130px; height: 130px; border-radius: 50%; background: rgba(255,255,255,0.22); display: flex; align-items: center; justify-content: center; }
+  #iconBubble svg { position: static; width: 84px; height: 84px; }
+  #courseTitle { position: absolute; left: 200px; top: 0; height: 190px; display: flex; align-items: center; font-family: "Fredoka"; font-weight: 700; font-size: 76px; color: #fff; white-space: nowrap; }
+  #desc { left: 120px; top: 490px; width: 780px; font-size: 38px; line-height: 1.4; color: var(--ink); }
+  #tags { left: 120px; top: 660px; display: flex; gap: 16px; }
+  .tag { padding: 12px 26px; border-radius: 14px; font-size: 26px; font-weight: 800; }
+
+  #workspace { left: 1010px; top: 220px; width: 820px; height: 640px; background: #fff; border-radius: 36px; box-shadow: 0 24px 60px rgba(48,71,147,0.14); border: 3px solid var(--blue-tint); overflow: hidden; }
+  #wsHead { height: 70px; background: var(--blue-tint); display: flex; align-items: center; padding: 0 28px; gap: 12px; }
+  #wsHead i { width: 18px; height: 18px; border-radius: 50%; display: block; }
+  #wsHead span { margin-left: 14px; font-size: 24px; font-weight: 800; color: var(--blue); }
+  #wsGrid { position: absolute; left: 0; right: 0; top: 70px; bottom: 0; background-image: radial-gradient(rgba(48,71,147,0.12) 2px, transparent 2.5px); background-size: 32px 32px; }
+  .cblock { position: absolute; left: 60px; height: 80px; }
+  .cblock svg { position: absolute; left: 0; top: 0; overflow: visible; }
+  .cblock .txt { position: relative; display: flex; align-items: center; height: 80px; padding: 0 36px; font-size: 30px; font-weight: 800; color: #fff; white-space: pre; }
+  .cblock.hat .txt { margin-top: 22px; }
+  #progress { left: 0; right: 0; top: 960px; display: flex; justify-content: center; gap: 14px; }
+  #progress i { display: block; height: 16px; width: 16px; border-radius: 999px; background: var(--blue-tint); }
+
+  /* Highlights */
+  #why { position: absolute; inset: 0; }
+  #whyTitle { top: 200px; width: 100%; text-align: center; font-family: "Fredoka"; font-weight: 700; font-size: 80px; color: var(--blue); }
+  #whyTitle span { color: var(--orange); }
+  .hcard { position: absolute; top: 380px; width: 380px; height: 450px; background: #fff; border-radius: 36px; box-shadow: 0 22px 50px rgba(48,71,147,0.14); text-align: center; padding: 0 30px; }
+  .hcard .hic { width: 120px; height: 120px; border-radius: 32px; margin: 48px auto 0; display: flex; align-items: center; justify-content: center; }
+  .hcard .hic svg { width: 76px; height: 76px; }
+  .hcard .val { margin-top: 34px; font-family: "Fredoka"; font-weight: 700; font-size: 60px; line-height: 1.05; }
+  .hcard .lab { margin-top: 18px; font-size: 27px; line-height: 1.35; color: var(--muted); }
+
+  /* Outro */
+  #outro { position: absolute; inset: 0; }
+  #cta { top: 500px; width: 100%; text-align: center; font-family: "Fredoka"; font-weight: 700; font-size: 92px; color: var(--blue); }
+  #cta span { color: var(--orange); }
+  #enroll { left: 740px; top: 650px; width: 440px; height: 112px; border-radius: 999px; background: var(--orange); color: #fff; font-family: "Fredoka"; font-weight: 600; font-size: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 14px 0 var(--orange-dark), 0 24px 40px rgba(221,163,66,0.35); }
+  #ripple { left: 960px; top: 706px; width: 0; height: 0; border-radius: 50%; border: 6px solid var(--orange); }
+  #url { top: 820px; width: 100%; text-align: center; font-size: 46px; font-weight: 800; color: var(--blue); }
+  #contact { top: 892px; width: 100%; text-align: center; font-size: 30px; color: var(--muted); }
+  #locs { top: 942px; width: 100%; text-align: center; font-size: 30px; color: var(--muted); }
+  #cursor { left: 0; top: 0; width: 64px; height: 64px; }
+  #fade { background: var(--bg); opacity: 0; }
+</style>
+</head>
+<body>
+  <div class="layer" id="dots"></div>
+  <div class="layer" id="shapes"></div>
+
+  <!-- Courses -->
+  <div id="courses">
+    <div class="abs" id="ourCourses">OUR COURSES</div>
+    <div class="abs" id="counter">Course <b id="cnum">1</b> of 6</div>
+    <div class="abs" id="titleBlock">
+      <svg id="titleSvg" width="800" height="190"></svg>
+      <div id="iconBubble"></div>
+      <div id="courseTitle"></div>
+    </div>
+    <div class="abs" id="desc"></div>
+    <div class="abs" id="tags"></div>
+    <div class="abs" id="workspace">
+      <div id="wsHead"><i style="background:#F28B82"></i><i style="background:var(--orange)"></i><i style="background:#7FC97F"></i><span id="wsName">my_project</span></div>
+      <div id="wsGrid"></div>
+    </div>
+    <div class="abs" id="progress"></div>
+  </div>
+
+  <!-- Highlights -->
+  <div id="why">
+    <div class="abs" id="whyTitle">Why <span>Mero Coding</span> Class?</div>
+  </div>
+
+  <!-- Outro -->
+  <div id="outro">
+    <div class="abs" id="cta">Let's start <span>coding!</span></div>
+    <div class="abs" id="ripple"></div>
+    <div class="abs" id="enroll">Enroll Now</div>
+    <div class="abs" id="url">merocodingclass.com</div>
+    <div class="abs" id="contact">+977 985 131 2890 &nbsp;·&nbsp; info@merocodingclass.com</div>
+    <div class="abs" id="locs"><svg width="26" height="30" viewBox="0 0 26 30" style="vertical-align:-4px"><path d="M13 1C6.4 1 1 6.2 1 12.6 1 21 13 29 13 29s12-8 12-16.4C25 6.2 19.6 1 13 1z" fill="#DDA342"/><circle cx="13" cy="12.5" r="4.5" fill="#fff"/></svg>&nbsp;Kathmandu &nbsp;·&nbsp; Chitwan &nbsp;·&nbsp; Biratnagar</div>
+  </div>
+
+  <!-- Intro / persistent logo -->
+  <div id="tagline">
+    <div class="l1">Fun coding classes for kids &amp; teens</div>
+    <div class="l2">CODING · ROBOTICS · AI</div>
+  </div>
+  <div class="layer" id="sparks"></div>
+  <div id="logo">
+    <img id="logoBottom" src="assets/logo-bottom.png">
+    <img id="logoTop" src="assets/logo-top.png">
+  </div>
+
+  <svg class="abs" id="cursor" viewBox="0 0 64 64"><path d="M10 6 L10 50 L22 39 L30 58 L38 54 L30 36 L46 36 Z" fill="#fff" stroke="#1F2A44" stroke-width="4" stroke-linejoin="round"/></svg>
+  <div class="layer" id="fade"></div>
+
+<script>
+const C = { orange: "#DDA342", orangeDark: "#C48A2C", orangeTint: "#FBEBCF", blue: "#304793", blueDark: "#233676", blueMid: "#5469B5", blueTint: "#DFE5F6" };
+
+// ---- Icons (white line art, 64x64) ----
+const S = 'fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"';
+const ICONS = {
+  scratch: `<svg viewBox="0 0 64 64"><path ${S} d="M8 10h12l4 4h8l4-4h20v16H36l-4 4h-8l-4-4H8z"/><path ${S} d="M8 34h12l4 4h8l4-4h20v16H8z"/></svg>`,
+  python: `<svg viewBox="0 0 64 64"><rect ${S} x="6" y="10" width="52" height="44" rx="8"/><path ${S} d="M17 26l9 7-9 7M32 42h14"/></svg>`,
+  ai: `<svg viewBox="0 0 64 64"><rect ${S} x="16" y="16" width="32" height="32" rx="6"/><path ${S} d="M24 6v10M32 6v10M40 6v10M24 48v10M32 48v10M40 48v10M6 24h10M6 32h10M6 40h10M48 24h10M48 32h10M48 40h10"/><text x="32" y="38" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="15" fill="#fff">AI</text></svg>`,
+  web: `<svg viewBox="0 0 64 64"><rect ${S} x="6" y="10" width="52" height="44" rx="8"/><path ${S} d="M6 22h52M26 30l-6 7 6 7M38 30l6 7-6 7"/></svg>`,
+  game: `<svg viewBox="0 0 64 64"><path ${S} d="M18 18h28a12 12 0 0 1 12 12v6a10 10 0 0 1-18 6l-3-3H27l-3 3a10 10 0 0 1-18-6v-6a12 12 0 0 1 12-12z"/><path ${S} d="M20 26v10M15 31h10"/><circle cx="42" cy="28" r="3.5" fill="#fff"/><circle cx="48" cy="35" r="3.5" fill="#fff"/></svg>`,
+  robot: `<svg viewBox="0 0 64 64"><rect ${S} x="14" y="20" width="36" height="30" rx="9"/><path ${S} d="M32 20v-8M26 42h12M8 30v10M56 30v10"/><circle cx="32" cy="9" r="4" fill="#fff"/><circle cx="25" cy="32" r="4" fill="#fff"/><circle cx="39" cy="32" r="4" fill="#fff"/></svg>`,
+  kids: `<svg viewBox="0 0 64 64"><circle ${S} cx="22" cy="20" r="8"/><circle ${S} cx="44" cy="24" r="6"/><path ${S} d="M8 54c0-10 6-18 14-18s14 8 14 18M34 54c0-8 4-14 10-14s10 6 10 14"/></svg>`,
+  laptop: `<svg viewBox="0 0 64 64"><rect ${S} x="12" y="14" width="40" height="28" rx="4"/><path ${S} d="M4 50h56M26 50l2-4h8l2 4"/></svg>`,
+  star: `<svg viewBox="0 0 64 64"><path ${S} d="M32 6l7.6 16 17.4 2.2-12.8 12 3.3 17.3L32 45l-15.5 8.5 3.3-17.3L7 24.2 24.4 22z"/></svg>`,
+  trophy: `<svg viewBox="0 0 64 64"><path ${S} d="M20 8h24v14a12 12 0 0 1-24 0zM20 14H8v4a10 10 0 0 0 12 10M44 14h12v4a10 10 0 0 1-12 10M32 34v10M22 56h20M26 44h12v12H26z"/></svg>`,
+};
+
+// ---- Courses (from merocodingclass.com) ----
+const COURSES = [
+  { name: "Scratch", icon: "scratch", desc: "Snap colorful blocks together to create animations, stories and games.",
+    tags: ["Block coding", "Animations", "Stories"], file: "my_cat_game.sb3",
+    blocks: ["when flag clicked", "move 10 steps", "say \"Hello, Nepal!\"", "play sound Meow"] },
+  { name: "Python", icon: "python", desc: "Write real code and solve fun puzzles with the world's most popular language.",
+    tags: ["Logic", "Problem solving", "Projects"], file: "hello.py", mono: true,
+    blocks: ["name = input(\"Name? \")", "print(\"Namaste,\", name)", "for i in range(3):", "    print(\"Let's code!\")"] },
+  { name: "AI", icon: "ai", desc: "Discover how machines learn, then build your own smart projects.",
+    tags: ["Machine learning", "Chatbots", "Vision"], file: "smart_camera.ai",
+    blocks: ["when camera sees object", "ask AI model: what is it?", "if answer = \"cat\"", "say \"That's a cat!\""] },
+  { name: "Web Development", icon: "web", desc: "Design, build and publish your very own website.",
+    tags: ["HTML", "CSS", "JavaScript"], file: "index.html", mono: true,
+    blocks: ["<h1>My First Website</h1>", "<p>Hello, Nepal!</p>", "<button>Click me</button>", "button.onclick = celebrate"] },
+  { name: "Game Development", icon: "game", desc: "Turn your ideas into playable games with characters, levels and scores.",
+    tags: ["Characters", "Levels", "Scoring"], file: "super_jump.game",
+    blocks: ["when space key pressed", "jump up 50", "if touching coin", "change score by 1"] },
+  { name: "Robotics", icon: "robot", desc: "Build and program robots that move, sense and react.",
+    tags: ["Sensors", "Motors", "Circuits"], file: "robo_rover.ino",
+    blocks: ["when start pressed", "turn motors on", "if distance < 10 cm", "turn left 90°"] },
+];
+const HIGHLIGHTS = [
+  { icon: "kids", color: C.orange, val: "Ages 6–18", lab: "Classes made for kids & teens" },
+  { icon: "laptop", color: C.blue, val: "Online & Physical", lab: "Regular, after-school & weekend classes" },
+  { icon: "star", color: C.orange, val: "Shark Tank", lab: "Featured on Shark Tank Nepal, Season 1" },
+  { icon: "trophy", color: C.blue, val: "Top 5%", lab: "STEM Educator globally, by STEM.org" },
+];
+
+// ---- Timeline (bar = 3 s at 80 BPM) ----
+const DURATION = 30;
+const COURSE_START = 3, COURSE_LEN = 3;
+const WHY_START = COURSE_START + COURSES.length * COURSE_LEN;   // 21
+const OUTRO_START = WHY_START + 3;                              // 24
+
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, x) => a + (b - a) * x;
+const easeOut = x => 1 - Math.pow(1 - x, 3);
+const easeIn = x => x * x * x;
+const easeInOut = x => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const easeBack = x => { const c1 = 2.0, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const elastic = x => x === 0 || x === 1 ? x : Math.pow(2, -10 * x) * Math.sin((x * 10 - 0.75) * (2 * Math.PI / 3)) + 1;
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+// Scratch-style block outline: notch on top, tab on bottom, optional "hat" dome
+function blockPath(w, h, { hat = false, r = 14 } = {}) {
+  const top = hat ? 22 : 0, b = top + h, n = 20;          // n = notch start x
+  const head = hat
+    ? `M0 ${top + r} C0 ${top - 18} 150 ${top - 30} 190 ${top} L${w - r} ${top} Q${w} ${top} ${w} ${top + r}`
+    : `M0 ${r} Q0 0 ${r} 0 L${n} 0 L${n + 10} 10 L${n + 40} 10 L${n + 50} 0 L${w - r} 0 Q${w} 0 ${w} ${r}`;
+  return `${head} L${w} ${b - r} Q${w} ${b} ${w - r} ${b} L${n + 50} ${b} L${n + 40} ${b + 10} L${n + 10} ${b + 10} L${n} ${b} L${r} ${b} Q0 ${b} 0 ${b - r} Z`;
+}
+
+// Deterministic random
+let seed = 11;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+// ---- Floating background shapes ----
+const SHAPE_KINDS = [
+  c => `<svg width="70" height="70"><circle cx="35" cy="35" r="30" fill="${c}"/></svg>`,
+  c => `<svg width="70" height="70"><circle cx="35" cy="35" r="26" fill="none" stroke="${c}" stroke-width="9"/></svg>`,
+  c => `<svg width="70" height="70"><path d="M35 8v54M8 35h54" stroke="${c}" stroke-width="12" stroke-linecap="round"/></svg>`,
+  c => `<svg width="70" height="70"><rect x="8" y="8" width="54" height="54" rx="14" fill="${c}"/></svg>`,
+  c => `<svg width="90" height="70"><text x="45" y="52" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="48" fill="${c}">{ }</text></svg>`,
+  c => `<svg width="90" height="70"><path d="M30 18 L12 35 L30 52 M60 18 L78 35 L60 52" fill="none" stroke="${c}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+];
+const SHAPE_COLORS = ["rgba(221,163,66,0.38)", "rgba(48,71,147,0.22)", "rgba(221,163,66,0.25)", "rgba(84,105,181,0.25)"];
+const SHAPES = [];
+for (let i = 0; i < 18; i++) {
+  const el = document.createElement("div");
+  el.className = "shape";
+  el.innerHTML = SHAPE_KINDS[i % SHAPE_KINDS.length](SHAPE_COLORS[i % SHAPE_COLORS.length]);
+  $("shapes").appendChild(el);
+  // keep shapes mostly at the edges so content stays clean
+  const edge = i % 4;
+  const x = edge === 0 ? rnd() * 220 : edge === 1 ? 1700 + rnd() * 200 : rnd() * 1900;
+  const y = edge === 2 ? rnd() * 150 : edge === 3 ? 900 + rnd() * 160 : rnd() * 1080;
+  SHAPES.push({ el, x, y, s: 0.6 + rnd() * 0.8, rs: (rnd() - 0.5) * 40, ph: rnd() * 6.28, amp: 10 + rnd() * 18 });
+}
+
+// ---- Sparks for the logo snap ----
+const SPARKS = [];
+for (let i = 0; i < 14; i++) {
+  const el = document.createElement("div");
+  el.className = "spark";
+  const col = i % 2 ? C.orange : C.blue;
+  el.innerHTML = i % 3 === 0
+    ? `<svg width="30" height="30"><path d="M15 2v26M2 15h26" stroke="${col}" stroke-width="6" stroke-linecap="round"/></svg>`
+    : `<svg width="24" height="24"><circle cx="12" cy="12" r="10" fill="${col}"/></svg>`;
+  $("sparks").appendChild(el);
+  SPARKS.push({ el, a: (i / 14) * Math.PI * 2 + rnd() * 0.3, d: 260 + rnd() * 160 });
+}
+
+// ---- Build course DOM (one set of blocks per course, toggled) ----
+const BLOCK_COLORS = [[C.orange, C.orangeDark], [C.blue, C.blueDark], [C.blueMid, C.blue], [C.orangeDark, "#A8741F"]];
+const courseBlocks = COURSES.map((c, ci) => c.blocks.map((txt, i) => {
+  const el = document.createElement("div");
+  el.className = "cblock" + (i === 0 ? " hat" : "");
+  el.innerHTML = `<svg></svg><div class="txt ${c.mono ? "mono" : ""}" style="${c.mono ? "font-size:27px;font-weight:bold" : ""}">${esc(txt)}</div>`;
+  el.style.display = "none";
+  $("wsGrid").appendChild(el);
+  return el;
+}));
+function sizeBlocks() {
+  courseBlocks.forEach(list => list.forEach((el, i) => {
+    el.style.display = "block";
+    const w = Math.max(320, el.querySelector(".txt").offsetWidth + 10);
+    const [fill, stroke] = BLOCK_COLORS[i % 4];
+    const svg = el.querySelector("svg");
+    svg.setAttribute("width", w); svg.setAttribute("height", 110);
+    svg.innerHTML = `<path d="${blockPath(w, 80, { hat: i === 0 })}" fill="${fill}" stroke="${stroke}" stroke-width="3"/>`;
+    el.style.display = "none";
+  }));
+}
+for (let i = 0; i < COURSES.length; i++) $("progress").appendChild(document.createElement("i"));
+const pDots = [...$("progress").children];
+
+// ---- Highlight cards ----
+const hcards = HIGHLIGHTS.map((h, i) => {
+  const el = document.createElement("div");
+  el.className = "hcard";
+  el.style.left = (140 + i * 420) + "px";
+  el.innerHTML = `<div class="hic" style="background:${h.color}">${ICONS[h.icon]}</div>
+    <div class="val" style="color:${h.color === C.orange ? C.orangeDark : C.blue}">${esc(h.val)}</div>
+    <div class="lab">${esc(h.lab)}</div>`;
+  $("why").appendChild(el);
+  return el;
+});
+
+let currentCourse = -1, ready = false;
+function setCourse(i) {
+  currentCourse = i;
+  const c = COURSES[i];
+  const fill = i % 2 === 0 ? C.orange : C.blue, stroke = i % 2 === 0 ? C.orangeDark : C.blueDark;
+  $("titleSvg").innerHTML = `<path d="${blockPath(800, 180, { r: 24 })}" fill="${fill}" stroke="${stroke}" stroke-width="4"/>`;
+  $("iconBubble").innerHTML = ICONS[c.icon];
+  $("courseTitle").textContent = c.name;
+  $("courseTitle").style.fontSize = c.name.length > 12 ? "62px" : "76px";
+  $("desc").textContent = c.desc;
+  $("tags").innerHTML = c.tags.map((x, k) =>
+    `<div class="tag" style="background:${k % 2 ? C.blueTint : C.orangeTint};color:${k % 2 ? C.blue : C.orangeDark}">${esc(x)}</div>`).join("");
+  $("wsName").textContent = c.file;
+  $("cnum").textContent = i + 1;
+  courseBlocks.forEach((list, ci) => list.forEach(el => el.style.display = ci === i ? "block" : "none"));
+  pDots.forEach((d, k) => { d.style.width = k === i ? "56px" : "16px"; d.style.background = k === i ? C.orange : (k < i ? C.blue : C.blueTint); });
+}
+
+// Logo placement: center (intro) -> corner (courses/why) -> top center (outro)
+const LOGO_CENTER = { x: 720, y: 250, s: 1 }, LOGO_CORNER = { x: 70, y: 40, s: 0.36 }, LOGO_OUTRO = { x: 795, y: 120, s: 0.69 };
+function logoPose(t) {
+  if (t < OUTRO_START - 0.3) {
+    const p = easeInOut(prog(t, 2.45, 3.15));
+    return { x: lerp(LOGO_CENTER.x, LOGO_CORNER.x, p), y: lerp(LOGO_CENTER.y, LOGO_CORNER.y, p), s: lerp(LOGO_CENTER.s, LOGO_CORNER.s, p) };
+  }
+  const p = easeInOut(prog(t, OUTRO_START - 0.3, OUTRO_START + 0.5));
+  return { x: lerp(LOGO_CORNER.x, LOGO_OUTRO.x, p), y: lerp(LOGO_CORNER.y, LOGO_OUTRO.y, p), s: lerp(LOGO_CORNER.s, LOGO_OUTRO.s, p) };
+}
+
+const show = (el, on) => el.style.display = on ? "block" : "none";
+
+window.render = function (t) {
+  if (!ready) { sizeBlocks(); ready = true; }
+
+  // Background
+  $("dots").style.backgroundPosition = `${t * 6}px ${t * 10}px`;
+  SHAPES.forEach(s => {
+    const y = s.y + Math.sin(t * 0.8 + s.ph) * s.amp;
+    const x = s.x + Math.cos(t * 0.6 + s.ph) * s.amp * 0.6;
+    s.el.style.transform = `translate(${x}px, ${y}px) rotate(${t * s.rs + s.ph * 30}deg) scale(${s.s})`;
+  });
+
+  // Fade in / out
+  $("fade").style.opacity = 1 - easeOut(prog(t, 0, 0.5)) + easeInOut(prog(t, DURATION - 0.7, DURATION));
+
+  // ---- Logo ----
+  const pose = logoPose(t);
+  const squash = t > 1.05 && t < 1.5 ? Math.sin(prog(t, 1.05, 1.5) * Math.PI) * 0.07 : 0;
+  const outroBounce = t > OUTRO_START + 0.5 ? Math.sin((t - OUTRO_START) * 2.2) * 4 : 0;
+  $("logo").style.transform = `translate(${pose.x}px, ${pose.y + outroBounce}px) scale(${pose.s * (1 + squash)}, ${pose.s * (1 - squash)})`;
+  const topP = easeOut(prog(t, 0.25, 0.85));
+  $("logoTop").style.transform = `translateY(${(1 - topP) * -800}px) rotate(${(1 - topP) * -8}deg)`;
+  const botP = easeBack(prog(t, 0.55, 1.1));
+  $("logoBottom").style.transform = `translateY(${(1 - botP) * 800}px)`;
+
+  // Sparks on snap
+  const sp = prog(t, 1.05, 1.8);
+  SPARKS.forEach(s => {
+    const d = easeOut(sp) * s.d;
+    s.el.style.opacity = sp > 0 && sp < 1 ? 1 - sp : 0;
+    s.el.style.transform = `translate(${960 + Math.cos(s.a) * d}px, ${447 + Math.sin(s.a) * d * 0.8}px) scale(${1 - sp * 0.5})`;
+  });
+
+  // Tagline
+  const tg = $("tagline");
+  const tIn = easeBack(prog(t, 1.25, 1.75)), tOut = easeIn(prog(t, 2.3, 2.6));
+  tg.style.opacity = clamp(prog(t, 1.25, 1.5)) * (1 - tOut);
+  tg.style.transform = `translateY(${(1 - tIn) * 40 + tOut * 30}px)`;
+  show(tg, t < 2.7);
+
+  // ---- Courses ----
+  const inCourses = t >= COURSE_START - 0.05 && t < WHY_START;
+  show($("courses"), inCourses);
+  if (inCourses) {
+    const idx = clamp(Math.floor((t - COURSE_START) / COURSE_LEN), 0, COURSES.length - 1);
+    const lt = t - COURSE_START - idx * COURSE_LEN;
+    if (idx !== currentCourse) setCourse(idx);
+    const out = easeIn(prog(lt, 2.72, 3.0));
+    const sceneIn = easeOut(prog(t, COURSE_START, COURSE_START + 0.5));
+    $("ourCourses").style.opacity = sceneIn;
+    $("counter").style.opacity = sceneIn;
+    $("progress").style.opacity = sceneIn;
+
+    const tb = easeBack(prog(lt, 0.0, 0.5));
+    $("titleBlock").style.opacity = clamp(prog(lt, 0, 0.2)) * (1 - out);
+    $("titleBlock").style.transform = `translateX(${(1 - tb) * -260 - out * 200}px) rotate(${(1 - tb) * -4}deg)`;
+    const ic = elastic(prog(lt, 0.2, 1.0));
+    $("iconBubble").style.transform = `scale(${ic}) rotate(${Math.sin(lt * 3) * 6}deg)`;
+    const dP = easeOut(prog(lt, 0.3, 0.7));
+    $("desc").style.opacity = dP * (1 - out);
+    $("desc").style.transform = `translateY(${(1 - dP) * 30}px)`;
+    [...$("tags").children].forEach((el, k) => {
+      const p = easeBack(prog(lt, 0.5 + k * 0.12, 0.85 + k * 0.12));
+      el.style.opacity = clamp(prog(lt, 0.5 + k * 0.12, 0.65 + k * 0.12)) * (1 - out);
+      el.style.transform = `scale(${p})`;
+    });
+
+    const ws = easeBack(prog(lt, 0.1, 0.55));
+    $("workspace").style.opacity = clamp(prog(lt, 0.1, 0.3)) * (1 - out);
+    $("workspace").style.transform = `translateY(${(1 - ws) * 80 + out * 60}px) scale(${0.94 + 0.06 * ws})`;
+    courseBlocks[idx].forEach((el, k) => {
+      const t0 = 0.55 + k * 0.38;
+      const p = prog(lt, t0, t0 + 0.35);
+      const slide = easeOut(p);
+      const landed = lt > t0 + 0.35;
+      const bounce = landed ? Math.sin(prog(lt, t0 + 0.35, t0 + 0.6) * Math.PI) * 0.05 : 0;
+      const baseY = 40 + (k === 0 ? 0 : 22) + k * 80;
+      el.style.top = baseY + "px";
+      el.style.opacity = clamp(p * 3);
+      el.style.transformOrigin = "0 50%";
+      el.style.transform = `translate(${(1 - slide) * 560}px, ${(1 - slide) * -30}px) rotate(${(1 - slide) * 6}deg) scale(${1 + bounce}, ${1 - bounce})`;
+    });
+  }
+
+  // ---- Highlights ----
+  const inWhy = t >= WHY_START - 0.05 && t < OUTRO_START;
+  show($("why"), inWhy);
+  if (inWhy) {
+    const lt = t - WHY_START, out = easeIn(prog(lt, 2.7, 3.0));
+    const ti = easeBack(prog(lt, 0, 0.5));
+    $("whyTitle").style.opacity = clamp(prog(lt, 0, 0.2)) * (1 - out);
+    $("whyTitle").style.transform = `scale(${0.7 + 0.3 * ti})`;
+    hcards.forEach((el, k) => {
+      const p = easeBack(prog(lt, 0.25 + k * 0.15, 0.75 + k * 0.15));
+      el.style.opacity = clamp(prog(lt, 0.25 + k * 0.15, 0.4 + k * 0.15)) * (1 - out);
+      el.style.transform = `translateY(${(1 - p) * 120 + out * 40 + Math.sin(t * 2 + k) * 5}px) rotate(${(1 - p) * (k % 2 ? 6 : -6)}deg)`;
+    });
+  }
+
+  // ---- Outro ----
+  const inOutro = t >= OUTRO_START - 0.05;
+  show($("outro"), inOutro);
+  show($("cursor"), inOutro);
+  if (inOutro) {
+    const lt = t - OUTRO_START;
+    const c = easeBack(prog(lt, 0.4, 0.9));
+    $("cta").style.opacity = clamp(prog(lt, 0.4, 0.6));
+    $("cta").style.transform = `scale(${0.6 + 0.4 * c})`;
+    const b = elastic(prog(lt, 0.8, 1.8));
+    const press = lt > 3.0 && lt < 3.35 ? Math.sin(prog(lt, 3.0, 3.35) * Math.PI) * 0.08 : 0;
+    const pulse = lt > 3.4 ? Math.sin((lt - 3.4) * 5) * 0.02 : 0;
+    $("enroll").style.transform = `scale(${b * (1 - press + pulse)})`;
+    const rp = prog(lt, 3.05, 3.8);
+    $("ripple").style.opacity = rp > 0 && rp < 1 ? 1 - rp : 0;
+    const rs = 120 + rp * 520;
+    $("ripple").style.width = $("ripple").style.height = rs + "px";
+    $("ripple").style.transform = `translate(${-rs / 2}px, ${-rs / 2}px)`;
+    [["url", 1.2], ["contact", 1.45], ["locs", 1.7]].forEach(([id, s]) => {
+      const p = easeOut(prog(lt, s, s + 0.4));
+      $(id).style.opacity = p;
+      $(id).style.transform = `translateY(${(1 - p) * 24}px)`;
+    });
+    // cursor glides in and clicks Enroll Now
+    const cm = easeInOut(prog(lt, 1.9, 2.95));
+    const cx = lerp(1560, 1000, cm), cy = lerp(1100, 702, cm) - Math.sin(cm * Math.PI) * 60;
+    const cs = lt > 3.0 && lt < 3.25 ? 0.85 : 1;
+    $("cursor").style.opacity = clamp(prog(lt, 1.9, 2.1)) * (1 - prog(lt, 4.6, 5.0));
+    $("cursor").style.transform = `translate(${cx}px, ${cy}px) scale(${cs})`;
+  }
+};
+
+window.DURATION = DURATION;
+document.fonts.ready.then(() => render(new URLSearchParams(location.search).get("t") * 1 || 0));
+</script>
+</body>
+</html>
